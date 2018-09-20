@@ -16,6 +16,8 @@ function drawTank(tank) {
   rect(-tank.size / 4, 0, tank.size / 5, tank.size); //left tread
   rect(tank.size / 4, 0, tank.size / 5, tank.size); //right tread
   rect(0, tank.size / 8, tank.size / 2, tank.size / 2); //main body
+  if (tank.ball)
+    fill(255, 0, 0)
   rect(0, -tank.size / 5, tank.size / 16, tank.size / 2); //gun
   pop();
 }
@@ -25,7 +27,7 @@ function drawData(data) {
   if (ready) { //prevents from drawing before p5 loads
     push()
     scale(windowWidth / data.server.width);
-    background(0);
+    background(170);
     for (let tank in data.tanks) {
       if (data.tanks.hasOwnProperty(tank)) {
         tank = data.tanks[tank];
@@ -36,7 +38,11 @@ function drawData(data) {
     }
     for (ball of data.balls) {
       fill(255, 0, 0);
-      ellipse(ball.x, ball.y, ball.size);
+      if (ball.holder == null) {
+        ellipse(ball.x, ball.y, ball.size);
+      } else {
+        console.log(ball);
+      }
     }
     pop();
   }
@@ -50,21 +56,25 @@ function setup() {
 }
 
 function keyPressed() {
-  if (key.toUpperCase() === 'A') { // L
+  if (key.toUpperCase() === 'A') { // Left
     socket.emit('keyDown', {
       value: 'turnLeft'
     })
-  } else if (key.toUpperCase() === 'D') { // R
+  } else if (key.toUpperCase() === 'D') { // Right
     socket.emit('keyDown', {
       value: 'turnRight'
     })
-  } else if (key.toUpperCase() === 'W') { // U
+  } else if (key.toUpperCase() === 'W') { // Up
     socket.emit('keyDown', {
       value: 'moveForward'
     })
-  } else if (key.toUpperCase() === 'S') { // D
+  } else if (key.toUpperCase() === 'S') { // Down
     socket.emit('keyDown', {
       value: 'moveBackward'
+    })
+  } else if (key.toUpperCase() === 'F') { // Shoot
+    socket.emit('keyDown', {
+      value: 'shoot'
     })
   }
 }

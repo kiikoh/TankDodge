@@ -60,6 +60,8 @@ io.on('connection', function(socket) {
       exports.pack.tanks[socket.id].movement[0] = true;
     } else if (input.value === 'moveBackward') {
       exports.pack.tanks[socket.id].movement[1] = true;
+    } else if (input.value === 'shoot') {
+      exports.pack.tanks[socket.id].shoot();
     }
   });
 
@@ -85,4 +87,8 @@ setInterval(function() {
     let tank = exports.pack.tanks[id];
     tank.update();
   }
+  for (ball of exports.pack.balls) {
+    ball.update();
+  }
+
 }, 1000 / TICKRATE); //updates at the tickrate
