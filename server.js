@@ -49,6 +49,7 @@ io.on('connection', function(socket) {
 
   socket.on('disconnect', function() {
     delete exports.pack.tanks[socket.id];
+    exports.pack.server.players--;
   });
 
   socket.on('keyDown', function(input) {
@@ -85,10 +86,11 @@ setInterval(function() {
   // console.log(ids);
   for (id of ids) {
     let tank = exports.pack.tanks[id];
-    tank.update();
+    if (tank.active) {
+      tank.update();
+    }
   }
   for (ball of exports.pack.balls) {
     ball.update();
   }
-
 }, 1000 / TICKRATE); //updates at the tickrate

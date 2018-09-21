@@ -32,16 +32,20 @@ function drawData(data) {
       if (data.tanks.hasOwnProperty(tank)) {
         tank = data.tanks[tank];
         //show every tank, tank is each individual tank at this point
-        fill(0, 255, 0);
-        drawTank(tank);
+        if (tank.active) {
+          fill(0, 255, 0);
+          drawTank(tank);
+        }
       }
     }
     for (ball of data.balls) {
-      fill(255, 0, 0);
       if (ball.holder == null) {
+        if (ball.active) {
+          fill(130, 0, 0);
+        } else {
+          fill(255, 0, 0);
+        }
         ellipse(ball.x, ball.y, ball.size);
-      } else {
-        console.log(ball);
       }
     }
     pop();

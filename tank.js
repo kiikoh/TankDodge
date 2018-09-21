@@ -18,10 +18,10 @@ module.exports =
       this.id = id;
       this.x = leftTeam ? 150 : width - 150;
       this.y = height / 2;
-      this.active; //player is not dead and can play
+      this.active = true; //player is not dead and can play
       this.ball = null; //owning a ball
       this.sensitivity = 4;
-      this.dir = 90;
+      this.dir = leftTeam ? 0 : 180;
       this.speed = 7;
       this.movement = [false, false, false, false]; // U D L R
       this.size = 65;
@@ -104,6 +104,9 @@ module.exports =
       for (let ball of balls) {
         if (collision(this, ball)) {
           if (ball.active) { //hit by ball
+            ball.dir = 180 - ball.dir;
+            ball.active = false;
+            this.speed /= 1.5;
             this.die();
           } else if (ball.holder == null && this.ball == null) { //picked up ball
             this.ball = ball;
@@ -114,6 +117,6 @@ module.exports =
     }
 
     die() {
-      console.log(this.id);
+      this.active = false;
     }
   }
