@@ -11,6 +11,7 @@ socket.on('connect', function() {
 
 function drawTank(tank) {
   push();
+  rectMode(CENTER);
   translate(tank.x, tank.y);
   rotate(90 - tank.dir);
   rect(-tank.size / 4, 0, tank.size / 5, tank.size); //left tread
@@ -27,7 +28,11 @@ function drawData(data) {
   if (ready) { //prevents from drawing before p5 loads
     push()
     scale(windowWidth / data.server.width);
-    background(170);
+    rectMode(CORNER);
+    fill(55, 127, 242);
+    rect(0, 0, data.server.width / 2, data.server.height);
+    fill(237, 170, 26);
+    rect(data.server.width / 2, 0, data.server.width / 2, data.server.height);
     for (let tank in data.tanks) {
       if (data.tanks.hasOwnProperty(tank)) {
         tank = data.tanks[tank];
@@ -56,7 +61,6 @@ function setup() {
   ready = true;
   createCanvas(windowWidth, windowHeight);
   angleMode(DEGREES);
-  rectMode(CENTER);
 }
 
 function keyPressed() {
@@ -79,6 +83,10 @@ function keyPressed() {
   } else if (key.toUpperCase() === 'F') { // Shoot
     socket.emit('keyDown', {
       value: 'shoot'
+    })
+  } else if (keyCode === 32) { // reset
+    socket.emit('keyDown', {
+      value: 'reset'
     })
   }
 }

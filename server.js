@@ -15,10 +15,14 @@ exports.pack = {
     tickrate: TICKRATE,
     width: 1000,
     height: 509,
-    players: 0
+    players: {
+      left: 0,
+      right: 0
+    }
   }
 }
 
+//spawn 5 balls
 for (var i = 0; i < 5; i++) {
   exports.pack.balls.push(new Ball(exports.pack.server.width / 2, i * exports.pack.server.height / 5));
 }
@@ -40,50 +44,95 @@ if (process.env.PORT) {
   });
 }
 
+function pickTeam() {
+  let left = exports.pack.server.players.left;
+  let right = exports.pack.server.players.right;
+  if (left <= right) {
+    exports.pack.server.players.left++;
+    return true;
+  }
+  exports.pack.server.players.right++;
+  return false;
+}
+
+function resetServer() {
+  exports.pack = {
+    tanks: {},
+    balls: [],
+    server: {
+      tickrate: TICKRATE,
+      width: 1000,
+      height: 509,
+      players: {
+        left: 0,
+        right: 0
+      },
+      gameActive: false
+    }
+  }
+  //spawn 5 balls
+  for (var i = 0; i < 5; i++) {
+    exports.pack.balls.push(new Ball(exports.pack.server.width / 2, i * exports.pack.server.height / 5));
+  }
+  let ids = Object.keys(io.sockets.sockets);
+  for (id of ids) {
+    exports.pack.tanks[id] = new Tank(id, pickTeam());
+  }
+}
+
 //when a user connects
 io.on('connection', function(socket) {
-  exports.pack.tanks[socket.id] = new Tank(socket.id, exports.pack.server.players % 2 === 0);
-  console.log(exports.pack.server.players % 2 === 0);
-  exports.pack.server.players++;
-  exports.pack.tanks[socket.id].moveForward();
+  exports.pack.tanks[socket.id] = new Tank(socket.id, pickTeam());
 
   socket.on('disconnect', function() {
+    if (exports.pack.tanks[socket.id].team) {
+      exports.pack.server.players.left--;
+    } else {
+      exports.pack.server.players.right--;
+    }
     delete exports.pack.tanks[socket.id];
-    exports.pack.server.players--;
   });
 
   socket.on('keyDown', function(input) {
-    if (input.value === 'turnLeft') {
-      exports.pack.tanks[socket.id].movement[2] = true;
-    } else if (input.value === 'turnRight') {
-      exports.pack.tanks[socket.id].movement[3] = true;
-    } else if (input.value === 'moveForward') {
-      exports.pack.tanks[socket.id].movement[0] = true;
-    } else if (input.value === 'moveBackward') {
-      exports.pack.tanks[socket.id].movement[1] = true;
-    } else if (input.value === 'shoot') {
-      exports.pack.tanks[socket.id].shoot();
+    if (exports.pack.server.gameActive) {
+      if (input.value === 'turnLeft') {
+        exports.pack.tanks[socket.id].movement[2] = true;
+      } else if (input.value === 'turnRight') {
+        exports.pack.tanks[socket.id].movement[3] = true;
+      } else if (input.value === 'moveForward') {
+        exports.pack.tanks[socket.id].movement[0] = true;
+      } else if (input.value === 'moveBackward') {
+        exports.pack.tanks[socket.id].movement[1] = true;
+      } else if (input.value === 'shoot') {
+        exports.pack.tanks[socket.id].shoot();
+      } else if (input.value === 'reset') {
+        resetServer();
+      }
     }
   });
 
   socket.on('keyUp', function(input) {
-    if (input.value === 'turnLeft') {
-      exports.pack.tanks[socket.id].movement[2] = false;
-    } else if (input.value === 'turnRight') {
-      exports.pack.tanks[socket.id].movement[3] = false;
-    } else if (input.value === 'moveForward') {
-      exports.pack.tanks[socket.id].movement[0] = false;
-    } else if (input.value === 'moveBackward') {
-      exports.pack.tanks[socket.id].movement[1] = false;
+    if (exports.pack.server.gameActive) {
+      if (input.value === 'turnLeft') {
+        exports.pack.tanks[socket.id].movement[2] = false;
+      } else if (input.value === 'turnRight') {
+        exports.pack.tanks[socket.id].movement[3] = false;
+      } else if (input.value === 'moveForward') {
+        exports.pack.tanks[socket.id].movement[0] = false;
+      } else if (input.value === 'moveBackward') {
+        exports.pack.tanks[socket.id].movement[1] = false;
+      }
     }
   });
 });
 
 //main server method
 setInterval(function() {
+  if (!exports.pack.server.gameActive)
+    resetServer();
+  exports.pack.server.gameActive = (exports.pack.server.players.left > 0 && exports.pack.server.players.right > 0);
   io.emit('data', exports.pack);
   let ids = Object.keys(io.sockets.sockets);
-  // console.log(ids);
   for (id of ids) {
     let tank = exports.pack.tanks[id];
     if (tank.active) {
@@ -93,4 +142,7 @@ setInterval(function() {
   for (ball of exports.pack.balls) {
     ball.update();
   }
+  // } else if (exports.pack.server.players.left > 0 && exports.pack.server.right > 0) {
+  //   exports.pack.server.gameActive = true;
+  // }
 }, 1000 / TICKRATE); //updates at the tickrate
