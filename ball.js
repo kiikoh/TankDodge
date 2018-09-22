@@ -32,7 +32,7 @@ module.exports =
     }
 
     update() {
-      if (this.dir) {
+      if (this.dir != null) {
         if (!this.active) {
           this.speed /= 1.02;
         }
