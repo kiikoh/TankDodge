@@ -102,10 +102,12 @@ module.exports =
       for (let ball of balls) {
         if (collision(this, ball)) {
           if (ball.active) { //hit by ball
-            ball.dir = 180 - ball.dir;
-            ball.active = false;
-            this.speed /= 1.5;
-            this.die();
+            if (ball.shooter.team !== this.team) {
+              ball.dir = 180 - ball.dir;
+              ball.active = false;
+              this.speed /= 1.5;
+              this.die();
+            }
           } else if (ball.holder == null && this.ball == null) { //picked up ball
             this.ball = ball;
             ball.pickedUp(this.id);

@@ -14,6 +14,7 @@ module.exports =
       this.active; //in the air, hitting will get a player out
       this.holder = null; //id of the holder
       this.speed = null;
+      this.shooter = null; //reference of the shooter
     }
 
     pickedUp(id) {
@@ -29,6 +30,7 @@ module.exports =
       this.y -= (tank.size + this.size + 2 * tank.speed + 2) / 2 * Math.sin(this.dir * Math.PI / 180);
       this.active = true;
       this.holder = null;
+      this.shooter = tank;
     }
 
     update() {
