@@ -30,7 +30,7 @@ socket.on('connect', function() {
   });
 
   socket.on('notification', function(data) {
-    notif.setMsg(data.msg);
+    // notif.setMsg(data.msg);
   });
 });
 
