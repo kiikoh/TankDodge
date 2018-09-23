@@ -85,7 +85,8 @@ function resetServer() {
 
 //when a user connects
 io.on('connection', function(socket) {
-  // module.exports.pack.tanks[socket.id] = new Tank(socket.id, pickTeam());
+  if (module.exports.pack.server.timeToStart > 0)
+    module.exports.pack.tanks[socket.id] = new Tank(socket.id, pickTeam());
 
   socket.on('disconnect', function() {
     if (module.exports.pack.tanks[socket.id]) {
