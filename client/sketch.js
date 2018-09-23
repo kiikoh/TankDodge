@@ -53,6 +53,13 @@ function drawData(data) {
         ellipse(ball.x, ball.y, ball.size);
       }
     }
+    if (data.server.timeToStart > 0) {
+      let fraction = data.server.timeToStart / data.server.tickrate % 1;
+      fill(0);
+      textSize(128 * map(fraction, 0, 1, .5, 1));
+      textAlign(CENTER, CENTER);
+      text(floor(data.server.timeToStart / data.server.tickrate) === 0 ? 'Go!' : floor(data.server.timeToStart / data.server.tickrate), data.server.width / 2, data.server.height / 2);
+    }
     pop();
   }
 }
