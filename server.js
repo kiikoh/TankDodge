@@ -131,6 +131,12 @@ io.on('connection', function(socket) {
   });
 });
 
+module.exports.sendNotif = function(msg) {
+  io.emit('notification', {
+    msg: msg
+  });
+}
+
 //main server method
 setInterval(function() {
   io.emit('data', module.exports.pack);

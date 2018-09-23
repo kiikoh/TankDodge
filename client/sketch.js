@@ -1,12 +1,37 @@
 const socket = io();
 let ready = false;
 let debug;
+let notif = new Notification();
+let tickrate;
 
+function Notification() {
+  this.msg;
+  this.timeLeft;
+
+  this.setMsg = function(msg) {
+    this.msg = msg;
+    this.timeLeft = 2 * tickrate;
+  }
+
+  this.show = function() {
+    if (this.timeLeft > 0) {
+      this.timeLeft--;
+      fill(0);
+      textSize(72);
+      textAlign(CENTER, CENTER);
+      text(this.msg, 0, 0); //translate before using this
+    }
+  }
+}
 
 socket.on('connect', function() {
   socket.on('data', function(data) {
     drawData(data);
-  })
+  });
+
+  socket.on('notification', function(data) {
+    notif.setMsg(data.msg);
+  });
 });
 
 function drawTank(tank) {
@@ -24,6 +49,7 @@ function drawTank(tank) {
 }
 
 function drawData(data) {
+  tickrate = data.server.tickrate;
   debug = data;
   if (ready) { //prevents from drawing before p5 loads
     push()
@@ -54,11 +80,17 @@ function drawData(data) {
       }
     }
     if (data.server.timeToStart > 0) {
+      notif.setMsg('');
       let fraction = data.server.timeToStart / data.server.tickrate % 1;
       fill(0);
       textSize(128 * map(fraction, 0, 1, .5, 1));
       textAlign(CENTER, CENTER);
       text(floor(data.server.timeToStart / data.server.tickrate) === 0 ? 'Go!' : floor(data.server.timeToStart / data.server.tickrate), data.server.width / 2, data.server.height / 2);
+    } else {
+      push();
+      translate(data.server.width / 2, data.server.height / 2);
+      notif.show();
+      pop();
     }
     pop();
   }

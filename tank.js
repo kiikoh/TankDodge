@@ -115,12 +115,15 @@ module.exports =
     }
 
     die() {
-      this.active = false;
-      pack.pack.server.players[this.team ? 'left' : 'right']--;
-      if (this.ball) {
-        this.ball.x = this.x;
-        this.ball.y = this.y;
-        this.ball.holder = null;
+      if (this.active) {
+        pack.sendNotif((this.team ? 'Left' : 'Right') + ' Team member dead!');
+        this.active = false;
+        pack.pack.server.players[this.team ? 'left' : 'right']--;
+        if (this.ball) {
+          this.ball.x = this.x;
+          this.ball.y = this.y;
+          this.ball.holder = null;
+        }
       }
     }
   }
