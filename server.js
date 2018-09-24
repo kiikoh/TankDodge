@@ -98,7 +98,6 @@ io.on('connection', function(socket) {
       delete module.exports.pack.tanks[socket.id];
     }
   });
-
   socket.on('keyDown', function(input) {
     if (module.exports.pack.tanks[socket.id]) {
       if (input.value === 'turnLeft') {
@@ -116,7 +115,6 @@ io.on('connection', function(socket) {
       }
     }
   });
-
   socket.on('keyUp', function(input) {
     if (module.exports.pack.tanks[socket.id]) {
       if (input.value === 'turnLeft') {
