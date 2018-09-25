@@ -26,7 +26,7 @@ function Notification() {
 
 socket.on('connect', function() {
   socket.on('data', function(data) {
-    drawData(data);
+    drawData(JSON.parse(data.data));
   });
 
   socket.on('notification', function(data) {
@@ -56,9 +56,9 @@ function drawData(data) {
     scale(windowWidth / data.server.width);
     rectMode(CORNER);
     fill(55, 127, 242);
-    rect(0, 0, data.server.width / 2, data.server.height);
+    rect(0, 0, data.server.width / 2, height);
     fill(237, 170, 26);
-    rect(data.server.width / 2, 0, data.server.width / 2, data.server.height);
+    rect(data.server.width / 2, 0, data.server.width / 2, height);
     for (let tank in data.tanks) {
       if (data.tanks.hasOwnProperty(tank)) {
         tank = data.tanks[tank];

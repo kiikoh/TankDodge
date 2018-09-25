@@ -138,7 +138,7 @@ module.exports.sendNotif = function(msg) {
 
 //main server method
 setInterval(function() {
-  io.emit('data', module.exports.pack);
+  io.emit('data', {data: JSON.stringify(module.exports.pack)});
   if (!module.exports.pack.server.gameActive) {
     if (module.exports.pack.server.players.left > 0 && module.exports.pack.server.players.right > 0) { // players ready
       module.exports.pack.server.timeToStart--;
