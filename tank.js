@@ -118,9 +118,11 @@ module.exports =
 
     die() {
       if (this.active) {
-        pack.sendNotif((this.team ? 'Left' : 'Right') + ' Team member dead!');
         this.active = false;
         pack.pack.server.players[this.team ? 'left' : 'right']--;
+        if (pack.pack.server.players[this.team ? 'left' : 'right'] === 0) {
+          pack.sendNotif((this.team ? 'Orange' : 'Blue') + ' team wins!');
+        }
         if (this.ball) {
           this.ball.x = this.x;
           this.ball.y = this.y;

@@ -7,19 +7,20 @@ let tickrate;
 function Notification() {
   this.msg;
   this.timeLeft;
+  this.maxTime = 3;
 
   this.setMsg = function(msg) {
     this.msg = msg;
-    this.timeLeft = 2 * tickrate;
+    this.timeLeft = this.maxTime * tickrate;
   }
 
   this.show = function() {
     if (this.timeLeft > 0) {
       this.timeLeft--;
-      fill(0);
+      fill(0, map(this.timeLeft, this.maxTime * tickrate, 0, 500, 0));
       textSize(72);
       textAlign(CENTER, CENTER);
-      text(this.msg, 0, 0); //translate before using this
+      text(this.msg, width / 2, height / 4);
     }
   }
 }
@@ -30,7 +31,7 @@ socket.on('connect', function() {
   });
 
   socket.on('notification', function(data) {
-    // notif.setMsg(data.msg);
+    notif.setMsg(data.msg);
   });
 });
 
@@ -80,19 +81,14 @@ function drawData(data) {
       }
     }
     if (data.server.timeToStart > 0) {
-      notif.setMsg('');
       let fraction = data.server.timeToStart / data.server.tickrate % 1;
       fill(0);
       textSize(128 * map(fraction, 0, 1, .5, 1));
       textAlign(CENTER, CENTER);
       text(floor(data.server.timeToStart / data.server.tickrate) === 0 ? 'Go!' : floor(data.server.timeToStart / data.server.tickrate), data.server.width / 2, data.server.height / 2);
-    } else {
-      push();
-      translate(data.server.width / 2, data.server.height / 2);
-      notif.show();
-      pop();
     }
     pop();
+    notif.show();
   }
 }
 
