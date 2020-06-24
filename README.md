@@ -1,5 +1,5 @@
 # TankDodge
-Recreation of my High School Computer Science Project in Freshman Year
+Recreation of my High School Computer Science Project from Sophomore Year
 
 ## How to Play
 * Once there is enough players the game will begin.
@@ -7,7 +7,8 @@ Recreation of my High School Computer Science Project in Freshman Year
 * Grab balls from the center line and press F to fire.
 
 ## Technology Used
-* p5.js
-* Socket-io
+* p5
+* Socket-IO
 * Heroku
-* Node.js
+* Node
+* Express
